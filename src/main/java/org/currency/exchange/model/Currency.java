@@ -1,15 +1,18 @@
 package org.currency.exchange.model;
 
+import lombok.Getter;
+
+@Getter
 public class Currency {
     private long id;
     private String code;
-    private String name;
+    private String full;
     private String sign;
 
-    public Currency(long id, String code, String name, String sign) {
+    public Currency(long id, String code, String full, String sign) {
         this.id = id;
         this.code = code;
-        this.name = name;
+        this.full = full;
         this.sign = sign;
     }
 }

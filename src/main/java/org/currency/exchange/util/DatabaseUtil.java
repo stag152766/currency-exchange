@@ -5,9 +5,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DatabaseUtils {
+/**
+ * Handles database connections and initialization
+ */
+public class DatabaseUtil {
+    private final static String URL = "jdbc:sqlite:exchange.db";
 
-    private final static String URL = "jdbc:sqlite::memory:";
+    // register db to avoid an error
+    static {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
@@ -34,19 +45,19 @@ public class DatabaseUtils {
                             "    UNIQUE (base_currency_id, target_currency_id)" +
                             ");"
             );
-
-
+            insertInitialData();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void insertInitialData(Connection conn) {
-        try (Statement smnt = getConnection().createStatement();) {
-            smnt.execute("DELETE from currencies");
+    private static void insertInitialData() {
+        try (Statement stmt = getConnection().createStatement();) {
+            stmt.execute("DELETE from currencies");
 
-            smnt.execute(
-                    "INSERT INTO currencies (code, name, sign) VALUES ('USD', 'US Dollar', '$'), \n" +
+            stmt.execute(
+                    "INSERT INTO currencies (code, full, sign) VALUES " +
+                            "('USD', 'US Dollar', '$')," +
                     "                ('EUR', 'Euro', '€'), " +
                     "                ('RUB', 'Russian Ruble', '₽'), " +
                     "           ('GBP', 'British Pound', '£');"
