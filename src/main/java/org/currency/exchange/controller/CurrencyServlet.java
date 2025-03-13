@@ -23,7 +23,7 @@ public class CurrencyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        // проверка текста после /currencies/
+        // check path after /currencies/
         if (pathInfo == null || pathInfo.equals("/")) {
             getAllCurrencies(resp);
         } else {
@@ -51,7 +51,23 @@ public class CurrencyServlet extends HttpServlet {
      * добавить новую валюту
      */
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            resp.setContentType("application/json");
+            Currency newCurrency = objectMapper.readValue(req.getInputStream(), Currency.class);
 
+            boolean success = currencyDAO.addCurrency(newCurrency);
+            if (success) {
+                resp.setStatus(HttpServletResponse.SC_CREATED);
+                resp.getWriter().println("{\"message\": \"Currency added successfully\"}");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                resp.getWriter().write("{\"error\": \"Currency already exists\"}");
+            }
+        } catch (IOException e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"error\": \"An error occurred while processing the request\"}");
+            e.printStackTrace();
+        }
     }
 }
