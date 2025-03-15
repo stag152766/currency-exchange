@@ -44,4 +44,16 @@ public class CurrencyDAO {
             throw new RuntimeException("Fail to create currency. ", e);
         }
     }
+
+    public boolean deleteById(int id) {
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement("delete from currencies where id = ?");
+            ps.setInt(1, id);
+            int rowAffected = ps.executeUpdate();
+            return rowAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Fail to delete currency");
+        }
+    }
 }
