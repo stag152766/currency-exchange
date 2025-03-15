@@ -73,7 +73,22 @@ public class CurrencyServlet extends HttpServlet {
 
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPatch(req, resp);
+        String pathInfo = req.getPathInfo();
+        if (pathInfo == null || pathInfo.equals("/")) {
+            resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+        } else {
+            int id = Integer.parseInt(pathInfo.substring(1));
+            resp.setContentType("application/json");
+            Currency updCurrency = objectMapper.readValue(req.getInputStream(), Currency.class);
+            boolean success = currencyDAO.updateBy(id, updCurrency);
+            if (success) {
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().print("Currency was updated successfully");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().print("Fail to update currency");
+            }
+        }
     }
 
     @Override

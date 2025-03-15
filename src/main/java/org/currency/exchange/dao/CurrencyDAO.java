@@ -56,4 +56,20 @@ public class CurrencyDAO {
             throw new RuntimeException("Fail to delete currency");
         }
     }
+
+    public boolean updateBy(int id, Currency currency) {
+        try(Connection conn = DatabaseUtil.getConnection()) {
+            String query = "update currencies set code=?, full=?, sign=? where id = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, currency.getCode());
+            ps.setString(2, currency.getFull());
+            ps.setString(3, currency.getSign());
+            ps.setInt(4, id);
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Fail to update currency");
+        }
+    }
 }
