@@ -20,7 +20,7 @@ public class CurrencyDAO {
             while (rs.next()) {
                 res.add(new Currency(rs.getInt("id"),
                         rs.getString("code"),
-                        rs.getString("full"),
+                        rs.getString("fullName"),
                         rs.getString("sign")
                 ));
             }
@@ -33,10 +33,10 @@ public class CurrencyDAO {
 
     public boolean addCurrency(Currency currency) {
         try (Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement prepStmt = conn.prepareStatement("insert into currencies (code, full, sign) " +
-                    "values (?, ?, ?)");
+            String query = "insert into currencies (code, fullName, sign) values (?, ?, ?)";
+            PreparedStatement prepStmt = conn.prepareStatement(query);
             prepStmt.setString(1, currency.getCode());
-            prepStmt.setString(2, currency.getFull());
+            prepStmt.setString(2, currency.getFullName());
             prepStmt.setString(3, currency.getSign());
             int rowAffected = prepStmt.executeUpdate();
             return rowAffected > 0;
@@ -58,11 +58,11 @@ public class CurrencyDAO {
     }
 
     public boolean updateBy(int id, Currency currency) {
-        try(Connection conn = DatabaseUtil.getConnection()) {
-            String query = "update currencies set code=?, full=?, sign=? where id = ?";
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            String query = "update currencies set code=?, fullName=?, sign=? where id = ?";
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, currency.getCode());
-            ps.setString(2, currency.getFull());
+            ps.setString(2, currency.getFullName());
             ps.setString(3, currency.getSign());
             ps.setInt(4, id);
             int affectedRows = ps.executeUpdate();
@@ -71,5 +71,31 @@ public class CurrencyDAO {
             e.printStackTrace();
             throw new RuntimeException("Fail to update currency");
         }
+    }
+
+    /**
+     * Find currency by code in uppercase
+     * @param code currency worldwide code https://www.iban.com/currency-codes
+     *
+     * @return currency or null
+     */
+    public Currency findByCode(String code) {
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            String query = "select * from currencies where code = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, code.toUpperCase());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Currency(rs.getInt("id"),
+                        rs.getString("code"),
+                        rs.getString("fullName"),
+                        rs.getString("sign")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Currency not found error");
+        }
+        return null;
     }
 }

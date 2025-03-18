@@ -27,18 +27,36 @@ public class CurrencyServlet extends HttpServlet {
         if (pathInfo == null || pathInfo.equals("/")) {
             getAllCurrencies(resp);
         } else {
-            getSpecificCurrency(resp);
+            getSpecificCurrency(resp, pathInfo);
         }
     }
 
-    private void getSpecificCurrency(HttpServletResponse resp) throws IOException {
-        resp.getWriter().println("GET request /currencies/{id} handle");
+
+    private void getSpecificCurrency(HttpServletResponse resp, String pathInfo) throws IOException {
+        try {
+            String currencyCode = pathInfo.substring(1);
+            Currency currency = currencyDAO.findByCode(currencyCode);
+
+            if (currency == null) {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().print("Currency not found");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_OK);
+                String result = objectMapper.writeValueAsString(currency);
+                resp.setContentType("application/json");
+                resp.getWriter().println(result);
+            }
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("Database is unavailable");
+        }
     }
 
     private void getAllCurrencies(HttpServletResponse resp) throws IOException {
         try {
             Collection<Currency> currencies = currencyDAO.getAllCurrencies();
             String result = objectMapper.writeValueAsString(currencies);
+            resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType("application/json");
             resp.getWriter().println(result);
         } catch (IOException e) {
@@ -52,9 +70,22 @@ public class CurrencyServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        addCurrencyIfNotExists(req, resp);
+    }
+
+    private void addCurrencyIfNotExists(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             resp.setContentType("application/json");
             Currency newCurrency = objectMapper.readValue(req.getInputStream(), Currency.class);
+            if (invalidValue(newCurrency)) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().print("Wrong values");
+            }
+            if (exists(newCurrency)) {
+                resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                resp.getWriter().print("Currency already exists");
+                return;
+            }
 
             boolean success = currencyDAO.addCurrency(newCurrency);
             if (success) {
@@ -62,13 +93,27 @@ public class CurrencyServlet extends HttpServlet {
                 resp.getWriter().println("{\"message\": \"Currency added successfully\"}");
             } else {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                resp.getWriter().write("{\"error\": \"Currency already exists\"}");
+                resp.getWriter().write(String.format(
+                        "{\"error\": \"Currency with code = %s is already exists\"}",
+                        newCurrency.getCode()));
             }
         } catch (IOException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().write("{\"error\": \"An error occurred while processing the request\"}");
             e.printStackTrace();
         }
+    }
+
+    private boolean exists(Currency currency) {
+        return currencyDAO.findByCode(currency.getCode()) != null;
+    }
+
+    private boolean invalidValue(Currency currency) {
+        assert currency.getCode() != null;
+        assert currency.getFullName() != null;
+        assert currency.getSign() != null;
+
+        return false;
     }
 
     @Override

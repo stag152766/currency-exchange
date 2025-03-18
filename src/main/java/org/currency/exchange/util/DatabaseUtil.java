@@ -9,7 +9,7 @@ import java.sql.Statement;
  * Handles database connections and initialization
  */
 public class DatabaseUtil {
-    private final static String URL = "jdbc:sqlite:exchange.db";
+    private final static String URL = "jdbc:sqlite:exchange1.db";
 
     // register db to avoid an error
     static {
@@ -30,7 +30,7 @@ public class DatabaseUtil {
                     "CREATE TABLE IF NOT EXISTS currencies (" +
                             "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "    code TEXT NOT NULL UNIQUE," +
-                            "    full name TEXT NOT NULL," +
+                            "    fullName name TEXT NOT NULL," +
                             "    sign TEXT NOT NULL" +
                             ");"
             );
@@ -56,7 +56,7 @@ public class DatabaseUtil {
             stmt.execute("DELETE from currencies");
 
             stmt.execute(
-                    "INSERT INTO currencies (code, full, sign) VALUES " +
+                    "INSERT INTO currencies (code, fullName, sign) VALUES " +
                             "('USD', 'US Dollar', '$')," +
                     "                ('EUR', 'Euro', '€'), " +
                     "                ('RUB', 'Russian Ruble', '₽'), " +
