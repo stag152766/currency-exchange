@@ -14,8 +14,8 @@ import java.util.List;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
-    private ExchangeRateDAO exchangeRateDAO = new ExchangeRateDAO();
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ExchangeRateDAO exchangeRateDAO = new ExchangeRateDAO();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * получить все обменные курсы
@@ -30,8 +30,16 @@ public class ExchangeRateServlet extends HttpServlet {
         }
     }
 
-    private void getSpecificExchangeRate(HttpServletResponse resp, String pathInfo) {
-
+    private void getSpecificExchangeRate(HttpServletResponse resp, String codes) throws IOException {
+        ExchangeRate rate = exchangeRateDAO.getExchangeRateByCode(codes);
+        if (rate == null) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().print("Pair of codes not found");
+        } else {
+            resp.getWriter().print(mapper.writeValueAsString(rate));
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setContentType("application/json");
+        }
     }
 
     private void getAllExchangeRates(HttpServletResponse resp) throws IOException {
