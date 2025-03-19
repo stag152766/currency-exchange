@@ -1,6 +1,5 @@
 package org.currency.exchange.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -8,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.currency.exchange.dao.CurrencyDAO;
 import org.currency.exchange.model.Currency;
+import org.currency.exchange.util.ObjectMapperUtil;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -15,7 +15,6 @@ import java.util.Collection;
 @WebServlet("/currencies/*")
 public class CurrencyServlet extends HttpServlet {
     private final CurrencyDAO currencyDAO = new CurrencyDAO();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * получить список всех валют
@@ -42,7 +41,7 @@ public class CurrencyServlet extends HttpServlet {
                 resp.getWriter().print("Currency not found");
             } else {
                 resp.setStatus(HttpServletResponse.SC_OK);
-                String result = objectMapper.writeValueAsString(currency);
+                String result = ObjectMapperUtil.getInstance().writeValueAsString(currency);
                 resp.setContentType("application/json");
                 resp.getWriter().println(result);
             }
@@ -55,7 +54,7 @@ public class CurrencyServlet extends HttpServlet {
     private void getAllCurrencies(HttpServletResponse resp) throws IOException {
         try {
             Collection<Currency> currencies = currencyDAO.getAllCurrencies();
-            String result = objectMapper.writeValueAsString(currencies);
+            String result = ObjectMapperUtil.getInstance().writeValueAsString(currencies);
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType("application/json");
             resp.getWriter().println(result);
@@ -76,7 +75,7 @@ public class CurrencyServlet extends HttpServlet {
     private void addCurrencyIfNotExists(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             resp.setContentType("application/json");
-            Currency newCurrency = objectMapper.readValue(req.getInputStream(), Currency.class);
+            Currency newCurrency = ObjectMapperUtil.getInstance().readValue(req.getInputStream(), Currency.class);
             if (invalidValue(newCurrency)) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().print("Wrong values");
@@ -124,7 +123,7 @@ public class CurrencyServlet extends HttpServlet {
         } else {
             int id = Integer.parseInt(pathInfo.substring(1));
             resp.setContentType("application/json");
-            Currency updCurrency = objectMapper.readValue(req.getInputStream(), Currency.class);
+            Currency updCurrency = ObjectMapperUtil.getInstance().readValue(req.getInputStream(), Currency.class);
             boolean success = currencyDAO.updateBy(id, updCurrency);
             if (success) {
                 resp.setStatus(HttpServletResponse.SC_OK);

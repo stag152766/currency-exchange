@@ -1,6 +1,5 @@
 package org.currency.exchange.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -8,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.currency.exchange.dao.ExchangeRateDAO;
 import org.currency.exchange.model.ExchangeRate;
+import org.currency.exchange.util.ObjectMapperUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +15,6 @@ import java.util.List;
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
     private final ExchangeRateDAO exchangeRateDAO = new ExchangeRateDAO();
-    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * получить все обменные курсы
@@ -37,7 +36,7 @@ public class ExchangeRateServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().print("Pair of codes not found");
         } else {
-            resp.getWriter().print(mapper.writeValueAsString(rate));
+            resp.getWriter().print(ObjectMapperUtil.getInstance().writeValueAsString(rate));
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType("application/json");
         }
@@ -45,7 +44,7 @@ public class ExchangeRateServlet extends HttpServlet {
 
     private void getAllExchangeRates(HttpServletResponse resp) throws IOException {
         List<ExchangeRate> rates = exchangeRateDAO.getAllExchangeRates();
-        String body = mapper.writer().writeValueAsString(rates);
+        String body = ObjectMapperUtil.getInstance().writer().writeValueAsString(rates);
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.setContentType("application/json");
         resp.getWriter().print(body);
