@@ -8,11 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+/**
+ * Обмен валюты
+ */
 @WebServlet("/exchange")
 public class ExchangeServlet extends HttpServlet {
 
     /**
-     * выполнить конвертацию валюты
+     * Расчёт перевода определённого количества средств из одной валюты в другую
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
