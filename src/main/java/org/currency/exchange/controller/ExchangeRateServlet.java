@@ -31,7 +31,7 @@ public class ExchangeRateServlet extends HttpServlet {
     }
 
     private void getSpecificExchangeRate(HttpServletResponse resp, String codes) throws IOException {
-        ExchangeRate rate = exchangeRateDAO.getExchangeRateByCode(codes);
+        ExchangeRate rate = exchangeRateDAO.getExchangeRateByCodes(codes);
         if (rate == null) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().print("Pair of codes not found");

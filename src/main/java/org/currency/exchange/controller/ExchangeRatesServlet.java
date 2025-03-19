@@ -40,6 +40,36 @@ public class ExchangeRatesServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        addIfNotExists(req, resp);
+    }
 
+    private void addIfNotExists(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            ExchangeRate newRate = ObjectMapperUtil.getInstance().readValue(req.getInputStream(), ExchangeRate.class);
+            if (invalidValue(newRate)) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().print("Required field is missing");
+            } else if (rateExists(newRate)) {
+
+            }
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("Database is not available");
+        }
+    }
+
+    private boolean rateExists(ExchangeRate newRate) {
+        String codes = parseCodes(newRate);
+        ExchangeRate currRate = exchangeRateDAO.getExchangeRateByCodes(codes);
+        return currRate != null;
+    }
+
+    private String parseCodes(ExchangeRate rate) {
+        if (rate == null) return "";
+        return null;
+    }
+
+    private boolean invalidValue(ExchangeRate newRate) throws IOException {
+        return newRate.getBaseCurrency() == null || newRate.getTargetCurrency() == null;
     }
 }
