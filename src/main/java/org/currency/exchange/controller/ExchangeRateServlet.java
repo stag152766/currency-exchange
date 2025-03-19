@@ -24,7 +24,8 @@ public class ExchangeRateServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
-            getAllExchangeRates(resp);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().print("Codes are missing");
         } else {
             getSpecificExchangeRate(resp, pathInfo);
         }
@@ -33,7 +34,7 @@ public class ExchangeRateServlet extends HttpServlet {
     private void getSpecificExchangeRate(HttpServletResponse resp, String codes) throws IOException {
         ExchangeRate rate = exchangeRateDAO.getExchangeRateByCode(codes);
         if (rate == null) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().print("Pair of codes not found");
         } else {
             resp.getWriter().print(mapper.writeValueAsString(rate));
