@@ -10,6 +10,7 @@ import org.currency.exchange.model.Currency;
 import org.currency.exchange.util.ObjectMapperUtil;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collection;
 
 @WebServlet("/currencies/*")
@@ -30,7 +31,7 @@ public class CurrencyServlet extends HttpServlet {
      * получить список всех валют
      */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
         // check path after /currencies/
         if (pathInfo == null || pathInfo.equals("/")) {
@@ -68,9 +69,10 @@ public class CurrencyServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType("application/json");
             resp.getWriter().println(result);
-        } catch (IOException e) {
+        } catch (SQLException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().println("Database error: " + e.getMessage());
+            resp.getWriter().println("Database is unavailable");
+            e.printStackTrace();
         }
     }
 

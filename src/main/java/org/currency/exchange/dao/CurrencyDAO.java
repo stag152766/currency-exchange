@@ -12,7 +12,7 @@ import java.util.Collection;
 
 public class CurrencyDAO {
 
-    public Collection<Currency> getAllCurrencies() {
+    public Collection<Currency> getAllCurrencies() throws SQLException {
         Collection<Currency> res = new ArrayList<>();
         try (Connection conn = DatabaseUtil.getConnection()) {
             ResultSet rs = conn.prepareStatement("select * from currencies")
@@ -25,10 +25,7 @@ public class CurrencyDAO {
                 ));
             }
             return res;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return res;
     }
 
     public boolean addCurrency(Currency currency) {
