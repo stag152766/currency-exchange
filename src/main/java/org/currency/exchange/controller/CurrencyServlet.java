@@ -14,7 +14,17 @@ import java.util.Collection;
 
 @WebServlet("/currencies/*")
 public class CurrencyServlet extends HttpServlet {
-    private final CurrencyDAO currencyDAO = new CurrencyDAO();
+    private final CurrencyDAO currencyDAO;
+
+    // Default constructor that creates real DAO
+    public CurrencyServlet() {
+        this(new CurrencyDAO());
+    }
+
+    // Package-private constructor for testing
+    CurrencyServlet(CurrencyDAO currencyDAO) {
+        this.currencyDAO = currencyDAO;
+    }
 
     /**
      * получить список всех валют
