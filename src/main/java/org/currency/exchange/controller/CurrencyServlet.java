@@ -1,6 +1,5 @@
 package org.currency.exchange.controller;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -128,15 +127,16 @@ public class CurrencyServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+            resp.getWriter().print("Is not implemented");
         } else {
             int id = Integer.parseInt(pathInfo.substring(1));
             resp.setContentType("application/json");
             Currency updCurrency = ObjectMapperUtil.getInstance().readValue(req.getInputStream(), Currency.class);
-            boolean success = currencyDAO.updateBy(id, updCurrency);
+            boolean success = currencyDAO.updateById(id, updCurrency);
             if (success) {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().print("Currency was updated successfully");
@@ -148,10 +148,11 @@ public class CurrencyServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+            resp.getWriter().print("Is not implemented");
         } else {
             int id = Integer.parseInt(pathInfo.substring(1));
             boolean success = currencyDAO.deleteById(id);

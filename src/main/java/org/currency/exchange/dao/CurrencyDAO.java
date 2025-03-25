@@ -54,7 +54,7 @@ public class CurrencyDAO {
         }
     }
 
-    public boolean updateBy(int id, Currency currency) {
+    public boolean updateById(int id, Currency currency) {
         try (Connection conn = DatabaseUtil.getConnection()) {
             String query = "update currencies set code=?, fullName=?, sign=? where id = ?";
             PreparedStatement ps = conn.prepareStatement(query);
