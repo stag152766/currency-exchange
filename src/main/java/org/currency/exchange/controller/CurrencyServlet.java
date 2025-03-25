@@ -88,27 +88,29 @@ public class CurrencyServlet extends HttpServlet {
         try {
             resp.setContentType("application/json");
             Currency newCurrency = ObjectMapperUtil.getInstance().readValue(req.getInputStream(), Currency.class);
-            if (invalidValue(newCurrency)) {
+            if (invalidData(newCurrency)) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().print("Wrong values");
+                resp.getWriter().print("{\"error\": \"Wrong data\"}");
+                return;
             }
             if (exists(newCurrency)) {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                resp.getWriter().print("Currency already exists");
+                resp.getWriter().write("{\"error\": \"Currency already exists\"}");
                 return;
             }
 
             boolean success = currencyDAO.addCurrency(newCurrency);
             if (success) {
                 resp.setStatus(HttpServletResponse.SC_CREATED);
-                resp.getWriter().println("{\"message\": \"Currency added successfully\"}");
+                String newCurrencyJson = ObjectMapperUtil.getInstance().writeValueAsString(newCurrency);
+                resp.getWriter().println(newCurrencyJson);
             } else {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
                 resp.getWriter().write(String.format(
-                        "{\"error\": \"Currency with code = %s is already exists\"}",
+                        "{\"error\": \"Currency with code \"%s\" already exists\"}",
                         newCurrency.getCode()));
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().write("{\"error\": \"An error occurred while processing the request\"}");
             e.printStackTrace();
@@ -119,12 +121,10 @@ public class CurrencyServlet extends HttpServlet {
         return currencyDAO.findByCode(currency.getCode()) != null;
     }
 
-    private boolean invalidValue(Currency currency) {
-        assert currency.getCode() != null;
-        assert currency.getFullName() != null;
-        assert currency.getSign() != null;
-
-        return false;
+    private boolean invalidData(Currency currency) {
+        return currency.getCode() == null
+                || currency.getFullName() == null
+                || currency.getSign() == null;
     }
 
     @Override
