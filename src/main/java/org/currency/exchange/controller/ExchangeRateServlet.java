@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.currency.exchange.dao.CurrencyDAO;
 import org.currency.exchange.dao.ExchangeRateDAO;
 import org.currency.exchange.model.ExchangeRate;
 import org.currency.exchange.util.ObjectMapperUtil;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
-    private final ExchangeRateDAO exchangeRateDAO = new ExchangeRateDAO();
+    private final ExchangeRateDAO exchangeRateDAO = new ExchangeRateDAO(new CurrencyDAO());
 
     /**
      * получить все обменные курсы
