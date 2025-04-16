@@ -12,7 +12,12 @@ import org.currency.exchange.model.ExchangeRate;
 import org.currency.exchange.util.ObjectMapperUtil;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet("/exchangeRates/*")
 public class ExchangeRatesServlet extends HttpServlet {
@@ -90,5 +95,56 @@ public class ExchangeRatesServlet extends HttpServlet {
         return rateDto.getBaseCurrencyCode() == null
                 || rateDto.getTargetCurrencyCode() == null
                 || rateDto.getRate() <= 0d;
+    }
+
+    /**
+     * Parse a URL /exchangeRate/USDRUB #
+     */
+    @Override
+    protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            String pathInfo = req.getPathInfo();
+            if (pathInfo == null || pathInfo.isBlank() || pathInfo.equals("/")) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().print("Required field is missing");
+            }
+            ExchangeRate rate = exchangeRateDAO.getExchangeRateByCodes(req.getPathInfo());
+            if (rate == null) {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().print("Exchange rate not found");
+            }
+            updateExchangeRates(req, resp, pathInfo);
+        } catch (IOException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("Database is not available");
+        }
+    }
+
+    private void updateExchangeRates(HttpServletRequest req, HttpServletResponse resp, String pathInfo) throws IOException {
+        String body = req.getReader().lines().collect(Collectors.joining());
+        String baseCurrencyCode = pathInfo.substring(1, 4);
+        String targetCurrencyCode = pathInfo.substring(4, 7);
+        Map<String, String> formData = parseFormData(body);
+        String rateStr = formData.get("rate");
+        if (rateStr == null) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Rate parameter is required");
+            return;
+        }
+        int result = exchangeRateDAO.updateExchangeRate(baseCurrencyCode, targetCurrencyCode,
+                Double.parseDouble(rateStr));
+        if (result > 0) {
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.getWriter().print("Exchange rate has successfully updated");
+        }
+    }
+
+    private Map<String, String> parseFormData(String formData) {
+        return Arrays.stream(formData.split("&"))
+                .map(pair -> pair.split("="))
+                .collect(Collectors.toMap(
+                        arr -> URLDecoder.decode(arr[0], StandardCharsets.UTF_8),
+                        arr -> arr.length > 1 ? URLDecoder.decode(arr[1], StandardCharsets.UTF_8) : ""
+                ));
     }
 }

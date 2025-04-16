@@ -114,4 +114,20 @@ public class ExchangeRateDAO {
         }
         return -1;
     }
+
+    public int updateExchangeRate(String baseCurrCode, String targetCurrCode, double rate) {
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            String query = "update exchangeRates set rate = ? "
+                    + " where base_currency_id = (select id from currencies where code = ?)"
+                    + " and target_currency_id = (select id from currencies where code = ?)";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setDouble(1, rate);
+            ps.setString(2, baseCurrCode);
+            ps.setString(3, targetCurrCode);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 }
