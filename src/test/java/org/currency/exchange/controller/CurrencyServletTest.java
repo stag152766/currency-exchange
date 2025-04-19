@@ -151,48 +151,6 @@ class CurrencyServletTest {
     }
 
 
-    @Test
-    void testDelete_NotImplemented() throws IOException {
-        when(request.getPathInfo()).thenReturn(null);
-
-        currencyServlet.doDelete(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-        assertEquals("Is not implemented", stringWriter.toString());
-    }
-
-    @Test
-    void testDelete_Success() throws IOException {
-        when(request.getPathInfo()).thenReturn("/1");
-        when(currencyDAO.deleteById(1)).thenReturn(true);
-
-        currencyServlet.doDelete(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_OK);
-        assertEquals("Currency was deleted successfully", stringWriter.toString());
-    }
-
-    @Test
-    void testDelete_InternalError() throws IOException {
-        when(request.getPathInfo()).thenReturn("/1");
-        when(currencyDAO.deleteById(1)).thenReturn(false);
-
-        currencyServlet.doDelete(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Fail to delete currency", stringWriter.toString());
-    }
-
-    @Test
-    void testUpdateById_InternalError() throws IOException {
-        when(request.getPathInfo()).thenReturn(null);
-
-        currencyServlet.doPatch(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-        assertEquals("Is not implemented", stringWriter.toString());
-    }
-
     private static class MockServletInputStream extends ServletInputStream {
         private final ByteArrayInputStream inputStream;
 
