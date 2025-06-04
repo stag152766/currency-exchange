@@ -9,8 +9,7 @@ import java.sql.Statement;
  * Handles database connections and initialization
  */
 public class DatabaseUtil {
-    // jdbc:sqlite:/Users/<user>/.SmartTomcat/currency-exchange/currency-exchange/exchange1.db
-    private final static String URL = "jdbc:sqlite:exchange1.db";
+    private final static String URL = "jdbc:sqlite::resource:exchange1.db";
 
     // register db to avoid an error
     static {
