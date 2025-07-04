@@ -40,7 +40,11 @@ public class CurrencyServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
 
         if ("/currencies".equals(servletPath)) {
-            getAllCurrencies(resp);
+            if (pathInfo == null || pathInfo.equals("/")) {
+                getAllCurrencies(resp);
+            } else {
+                getSpecificCurrency(resp, pathInfo);
+            }
         } else if ("/currency".equals(servletPath)) {
             if (pathInfo == null || pathInfo.equals("/")) {
                 sendErrorResponse(resp, HttpServletResponse.SC_BAD_REQUEST, "Currency code is required");
@@ -69,9 +73,8 @@ public class CurrencyServlet extends HttpServlet {
 
     private void getSpecificCurrency(HttpServletResponse resp, String pathInfo) throws IOException {
         try {
-            String currencyCode = pathInfo.substring(1);
-            Currency currency = currencyDAO.findByCode(currencyCode);
-
+            String code = pathInfo.substring(1);
+            Currency currency = currencyDAO.findByCode(code);
             if (currency == null) {
                 sendErrorResponse(resp, HttpServletResponse.SC_NOT_FOUND, "Currency not found");
             } else {

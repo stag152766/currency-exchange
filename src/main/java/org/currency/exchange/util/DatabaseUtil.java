@@ -9,7 +9,7 @@ import java.sql.Statement;
  * Handles database connections and initialization
  */
 public class DatabaseUtil {
-    private final static String URL = "jdbc:sqlite::resource:exchange1.db";
+    private final static String URL = "jdbc:sqlite:/Users/stag/Documents/DB/exchange1.db";
 
     // register db to avoid an error
     static {
@@ -26,10 +26,10 @@ public class DatabaseUtil {
 
     public static void initializeDatabase() {
         try (Statement smtm = getConnection().createStatement()) {
-            smtm.execute("drop table currencies");
+            smtm.execute("drop table if exists currencies");
 
             smtm.execute(
-                    "CREATE TABLE IF NOT EXISTS currencies (" +
+                    "CREATE TABLE currencies (" +
                             "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "    code TEXT NOT NULL UNIQUE," +
                             "    fullName name TEXT NOT NULL," +
@@ -37,8 +37,10 @@ public class DatabaseUtil {
                             ");"
             );
 
+            smtm.execute("drop table if exists exchangeRates");
+
             smtm.execute(
-                    "CREATE TABLE IF NOT EXISTS exchangeRates (" +
+                    "CREATE TABLE exchangeRates (" +
                             "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "    base_currency_id INTEGER NOT NULL," +
                             "    target_currency_id INTEGER NOT NULL," +
@@ -57,7 +59,6 @@ public class DatabaseUtil {
 
     private static void insertInitialData() {
         try (Statement stmt = getConnection().createStatement()) {
-            stmt.execute("delete from currencies");
 
             stmt.execute("INSERT INTO currencies (code, fullName, sign) VALUES " +
                     "('USD', 'US Dollar', '$')," +
@@ -65,17 +66,14 @@ public class DatabaseUtil {
                     "('RUR', 'Russian Ruble', '₽'), " +
                     "('GBP', 'British Pound', '£');"
             );
-
-            stmt.execute("delete from exchangeRates");
-
             stmt.execute("INSERT INTO exchangeRates (base_currency_id, target_currency_id, rate) " +
                     "VALUES  " +
-                    "((SELECT ID FROM Currencies WHERE Code = 'USD'), " +
-                    "( SELECT ID FROM Currencies WHERE Code = 'EUR'), 0.92) , " +
-                    "((SELECT ID FROM Currencies WHERE Code = 'USD'), " +
-                    "( SELECT ID FROM Currencies WHERE Code = 'RUR'), 81.66), " +
-                    "(( SELECT ID FROM Currencies WHERE Code = 'EUR'), " +
-                    "( SELECT ID FROM Currencies WHERE Code = 'RUR'), 89.14)"
+                    "((SELECT id FROM currencies WHERE code = 'USD'), " +
+                    "( SELECT id FROM currencies WHERE code = 'EUR'), 0.92) , " +
+                    "((SELECT id FROM currencies WHERE code = 'USD'), " +
+                    "( SELECT id FROM currencies WHERE code = 'RUR'), 81.66), " +
+                    "(( SELECT id FROM currencies WHERE code = 'EUR'), " +
+                    "( SELECT id FROM currencies WHERE code = 'RUR'), 89.14)"
             );
 
         } catch (SQLException e) {
