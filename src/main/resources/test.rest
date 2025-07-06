@@ -4,4 +4,34 @@ Accept: application/json
 ###
 GET http://localhost:8080/currency-exchange/currencies/usd
 
+Accept: application/json
+
+###
+POST http://localhost:8080/currency-exchange/currencies
+Content-Type: application/x-www-form-urlencoded
+
+name=Japanese Yen&code=JPY&sign=¥
+
+###
+GET http://localhost:8080/currency-exchange/exchangeRates/
+Accept: application/json
+
+###
+POST http://localhost:8080/currency-exchange/exchangeRates
+Content-Type: application/json
+
+{
+  "baseCurrencyCode": "USD",
+  "targetCurrencyCode": "JPY",
+  "rate": 110.0
+}
+
+###
+PATCH http://localhost:8080/currency-exchange/exchangeRates/USDJPY
+Content-Type: application/json
+
+{
+  "rate": 111.11
+}
+
 
