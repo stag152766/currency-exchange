@@ -15,10 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * REST API for currency operations:
- * - GET /currencies - Get list of all currencies
- * - GET /currency/{code} - Get specific currency by code
- * - POST /currencies - Create new currency
+ * Валюты
  */
 @WebServlet(urlPatterns = {"/currencies/*", "/currency/*"})
 public class CurrencyServlet extends HttpServlet {
@@ -34,6 +31,9 @@ public class CurrencyServlet extends HttpServlet {
         this.currencyDAO = currencyDAO;
     }
 
+    /**
+     * Получение списка валют, Получение конкретной валюты
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String servletPath = req.getServletPath();
@@ -54,6 +54,9 @@ public class CurrencyServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Добавление новой валюты в базу
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (!"/currencies".equals(req.getServletPath())) {

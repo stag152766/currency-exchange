@@ -16,16 +16,31 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/exchangeRates/*")
+/**
+ * Обменные курсы 
+ */
+@WebServlet(urlPatterns = {"/exchangeRates/*", "/exchangeRate/*"})
 public class ExchangeRatesServlet extends HttpServlet {
     private final ExchangeRateDAO exchangeRateDAO = new ExchangeRateDAO(new CurrencyDAO());
 
+    /**
+     * Получение списка всех обменных курсов, Получение конкретного обменного курса
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             getAllExchangeRates(resp);
-        } else {
+            return;
+        }
+        try {
+            String code = pathInfo.substring(1);
+            ExchangeRate rate = exchangeRateDAO.getExchangeRateByCodes(code);
+            if (rate == null) {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().print("Exchange rate not found");
+            }
+        } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().print("Database not available");
         }
@@ -94,7 +109,7 @@ public class ExchangeRatesServlet extends HttpServlet {
     }
 
     /**
-     * Parse a URL /exchangeRate/USDRUB #
+     * Обновление обменного курса
      */
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -137,6 +152,4 @@ public class ExchangeRatesServlet extends HttpServlet {
             resp.getWriter().print("Database is not available");
         }
     }
-
-
 }
