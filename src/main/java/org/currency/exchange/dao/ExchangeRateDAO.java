@@ -34,15 +34,16 @@ public class ExchangeRateDAO {
                         rs.getInt("id"),
                         baseCurrency,
                         targetCurrency,
-                        rs.getDouble("rate")
-                );
+                        rs.getDouble("rate"));
 
                 rates.add(exchangeRate);
             }
+
+            return rates;
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new DatabaseException("Database connection failed", e);
         }
-        return rates;
     }
 
     public ExchangeRate getExchangeRateByCodes(String codes) {
@@ -66,11 +67,13 @@ public class ExchangeRateDAO {
                         getBaseCurrency(rs),
                         getTargetCurrency(rs),
                         rs.getDouble("rate"));
+            } else {
+                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new DatabaseException("Database connection failed", e);
         }
-        return null;
     }
 
     private static Currency getTargetCurrency(ResultSet rs) throws SQLException {
@@ -78,8 +81,7 @@ public class ExchangeRateDAO {
                 rs.getInt("target_id"),
                 rs.getString("target_name"),
                 rs.getString("target_code"),
-                rs.getString("target_sign")
-        );
+                rs.getString("target_sign"));
     }
 
     private static Currency getBaseCurrency(ResultSet rs) throws SQLException {
@@ -111,8 +113,8 @@ public class ExchangeRateDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new DatabaseException("Database connection failed", e);
         }
-        return -1;
     }
 
     public int updateExchangeRate(String baseCurrCode, String targetCurrCode, double rate) {
@@ -127,7 +129,7 @@ public class ExchangeRateDAO {
             return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new DatabaseException("Database connection failed", e);
         }
-        return -1;
     }
 }

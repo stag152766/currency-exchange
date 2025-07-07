@@ -91,7 +91,7 @@ public class CurrencyDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Currency not found error");
+            throw new RuntimeException("Database connection failed", e);
         }
         return null;
     }

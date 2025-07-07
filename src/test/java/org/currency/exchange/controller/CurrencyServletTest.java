@@ -49,31 +49,11 @@ class CurrencyServletTest {
     }
 
     @Test
-    void shouldReturnAllCurrenciesWhenGetRequestIsValid() throws IOException, SQLException {
-        // Given
-        Collection<Currency> currencies = List.of(TEST_USD, TEST_CURRENCY);
-        when(currencyDAO.getAllCurrencies()).thenReturn(currencies);
-        when(request.getServletPath()).thenReturn("/currency");
-        when(request.getPathInfo()).thenReturn(null);
-
-        // When
-        currencyServlet.doGet(request, response);
-
-        // Then
-        verify(response).setStatus(HttpServletResponse.SC_OK);
-        verify(response).setContentType(CONTENT_TYPE_JSON);
-        String expectedJson = ObjectMapperUtil.getInstance().writeValueAsString(currencies);
-        assertTrue(stringWriter.toString().contains(expectedJson),
-                "Response should contain: " + expectedJson + "\nBut was: " + stringWriter.toString());
-        verify(currencyDAO, times(1)).getAllCurrencies();
-    }
-
-    @Test
     void shouldReturnErrorWhenDatabaseFailsDuringGet() throws IOException, SQLException {
         // Given
         when(request.getServletPath()).thenReturn("/currency");
-        when(request.getPathInfo()).thenReturn(null);
-        when(currencyDAO.getAllCurrencies()).thenThrow(new SQLException("Database connection failed"));
+        when(request.getPathInfo()).thenReturn("/EUR");
+        when(currencyDAO.findByCode("EUR")).thenThrow(new RuntimeException("Database connection failed"));
 
         // When
         currencyServlet.doGet(request, response);

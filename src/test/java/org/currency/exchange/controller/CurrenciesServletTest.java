@@ -190,4 +190,36 @@ class CurrenciesServletTest {
           assertTrue(stringWriter.toString().contains("Database is unavailable"),
                     "Response should contain database error message");
      }
+
+     @Test
+     void shouldReturnAllCurrenciesWhenPathInfoIsSlash() throws IOException, SQLException {
+          // Given
+          Collection<Currency> currencies = List.of(TEST_USD, TEST_CURRENCY);
+          when(currencyDAO.getAllCurrencies()).thenReturn(currencies);
+          when(request.getPathInfo()).thenReturn("/");
+
+          // When
+          currenciesServlet.doGet(request, response);
+
+          // Then
+          verify(response).setStatus(HttpServletResponse.SC_OK);
+          verify(response).setContentType(CONTENT_TYPE_JSON);
+          String expectedJson = ObjectMapperUtil.getInstance().writeValueAsString(currencies);
+          assertTrue(stringWriter.toString().contains(expectedJson));
+          verify(currencyDAO, times(1)).getAllCurrencies();
+     }
+
+     @Test
+     void shouldReturnNotFoundForWrongServletPath() throws IOException {
+          // Given
+          when(request.getServletPath()).thenReturn("/wrong");
+
+          // When
+          currenciesServlet.doPost(request, response);
+
+          // Then
+          verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+          verify(response).setContentType("application/json");
+          assertTrue(stringWriter.toString().contains("Not found"));
+     }
 }
