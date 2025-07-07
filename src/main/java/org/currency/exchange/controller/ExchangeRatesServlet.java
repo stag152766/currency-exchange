@@ -17,9 +17,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Обменные курсы 
+ * Обменные курсы
  */
-@WebServlet(urlPatterns = {"/exchangeRates/*", "/exchangeRate/*"})
+@WebServlet(urlPatterns = { "/exchangeRates/*", "/exchangeRate/*" })
 public class ExchangeRatesServlet extends HttpServlet {
     private final ExchangeRateDAO exchangeRateDAO = new ExchangeRateDAO(new CurrencyDAO());
 
@@ -28,9 +28,15 @@ public class ExchangeRatesServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String servletPath = req.getServletPath();
         String pathInfo = req.getPathInfo();
-        if (pathInfo == null || pathInfo.equals("/")) {
+
+        if ("/exchangeRates".equals(servletPath)) {
             getAllExchangeRates(resp);
+        }
+
+        if (pathInfo == null || pathInfo.equals("/")) {
+
             return;
         }
         try {

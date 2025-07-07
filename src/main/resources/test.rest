@@ -2,7 +2,7 @@ GET http://localhost:8080/currency-exchange/currencies/
 Accept: application/json
 
 ###
-GET http://localhost:8080/currency-exchange/currencies/usd
+GET http://localhost:8080/currency-exchange/currency/usd
 
 Accept: application/json
 
@@ -17,7 +17,8 @@ GET http://localhost:8080/currency-exchange/exchangeRates/
 Accept: application/json
 
 ###
-GET http://localhost:8080/currency-exchange/exchangeRate/USD
+//TODO fix 404
+GET http://localhost:8080/currency-exchange/exchangeRate/USDRUB
 Accept: application/json
 
 ###
@@ -31,7 +32,8 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:8080/currency-exchange/exchangeRates/USDJPY
+// TODO fix 
+PATCH http://localhost:8080/currency-exchange/exchangeRate/USDJPY
 Content-Type: application/json
 
 {
