@@ -1,28 +1,24 @@
-GET http://localhost:8080/currency-exchange/currencies/
+GET http://localhost:9098/currency_exchange_war/currencies/
 Accept: application/json
 
 ###
-GET http://localhost:8080/currency-exchange/currency/usd
+GET http://localhost:9098/currency_exchange_war/currency/usd
 
 Accept: application/json
 
 ###
-POST http://localhost:8080/currency-exchange/currencies
+POST http://localhost:9098/currency_exchange_war/currencies
 Content-Type: application/x-www-form-urlencoded
 
 name=Japanese Yen&code=JPY&sign=¥
 
 ###
-GET http://localhost:8080/currency-exchange/exchangeRates/
+GET http://localhost:9098/currency_exchange_war/exchangeRates
 Accept: application/json
 
 ###
-//TODO fix 404
-GET http://localhost:8080/currency-exchange/exchangeRate/USDRUB
-Accept: application/json
-
-###
-POST http://localhost:8080/currency-exchange/exchangeRates
+// TODO fix 404
+POST http://localhost:9098/currency_exchange_war/exchangeRates
 Content-Type: application/json
 
 {
@@ -31,13 +27,18 @@ Content-Type: application/json
   "rate": 110.0
 }
 
+
 ###
-// TODO fix 
-PATCH http://localhost:8080/currency-exchange/exchangeRate/USDJPY
+GET http://localhost:9098/currency_exchange_war/exchangeRate/USDEUR
+Accept: application/json
+
+###
+// TODO fix 400
+PATCH http://localhost:9098/currency_exchange_war/exchangeRate/USDEUR
 Content-Type: application/json
 
 {
-  "rate": 111.11
+  "rate": 1.11
 }
 
 

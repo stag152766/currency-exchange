@@ -85,7 +85,7 @@ class ExchangeRatesServletTest {
 
      @Test
      void shouldReturnAllExchangeRates() throws Exception {
-          when(request.getPathInfo()).thenReturn("/exchangeRates");
+          when(request.getServletPath()).thenReturn("/exchangeRates");
           when(exchangeRateDAO.getAllExchangeRates()).thenReturn(List.of(TEST_RATE));
 
           exchangeRatesServlet.doGet(request, response);
@@ -101,7 +101,7 @@ class ExchangeRatesServletTest {
 
      @Test
      void shouldReturnErrorForInvalidPath() throws Exception {
-          when(request.getPathInfo()).thenReturn("/invalid");
+          when(request.getServletPath()).thenReturn("/invalid");
 
           exchangeRatesServlet.doGet(request, response);
 
@@ -181,7 +181,7 @@ class ExchangeRatesServletTest {
 
      @Test
      void shouldReturnInternalServerErrorOnException() throws Exception {
-          when(request.getPathInfo()).thenReturn("/exchangeRates");
+          when(request.getServletPath()).thenReturn("/exchangeRates");
           when(exchangeRateDAO.getAllExchangeRates()).thenThrow(new RuntimeException("DB error"));
 
           exchangeRatesServlet.doGet(request, response);

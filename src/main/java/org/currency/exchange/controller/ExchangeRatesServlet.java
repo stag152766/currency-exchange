@@ -37,10 +37,10 @@ public class ExchangeRatesServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
+        String servletPath = req.getServletPath();
         
         try {
-            if ("/exchangeRates".equals(pathInfo)) {
+            if ("/exchangeRates".equals(servletPath)) {
                 getAllExchangeRates(resp);
             } else {
                 ResponseUtil.sendErrorResponse(resp, HttpServletResponse.SC_NOT_FOUND,

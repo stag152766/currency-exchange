@@ -48,8 +48,8 @@ public class ExchangeRateDAO {
 
     public ExchangeRate getExchangeRateByCodes(String codes) {
         try (Connection conn = DatabaseUtil.getConnection()) {
-            String baseCode = codes.substring(1, 4);
-            String targCode = codes.substring(4);
+            String baseCode = codes.substring(0, 3);
+            String targCode = codes.substring(3);
             String query = "SELECT er.id, er.rate, bc.id AS base_id, bc.fullname AS base_name, bc.code AS base_code, " +
                     "bc.sign AS base_sign, tc.id AS target_id, tc.fullname AS target_name, " +
                     "tc.code AS target_code, tc.sign AS target_sign FROM exchangerates er " +

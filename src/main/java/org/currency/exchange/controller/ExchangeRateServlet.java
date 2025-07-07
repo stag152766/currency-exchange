@@ -41,9 +41,9 @@ public class ExchangeRateServlet extends HttpServlet {
             return;
         }
 
-        String code = pathInfo.substring(1); // remove leading slash
+        String codes = pathInfo.substring(1); // remove leading slash
         try {
-            ExchangeRate rate = exchangeRateDAO.getExchangeRateByCodes(code);
+            ExchangeRate rate = exchangeRateDAO.getExchangeRateByCodes(codes);
 
             if (rate == null) {
                 ResponseUtil.sendErrorResponse(resp, HttpServletResponse.SC_NOT_FOUND,
